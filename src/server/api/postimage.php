@@ -1,35 +1,17 @@
 <?php
-    var_dump($_POST["image"]);
-    var_dump($_POST["fb_token"]);
-    var_dump($_POST["comment"]);
+    require_once("MySQL.php");
+    $db = new MySQL();
 
-    $link = mysql_connect('localhost', 'root', 'root');
-    if (!$link) {
-        echo "cant connect";
-    }
+    $max_id = $db->getMaxImageId();
 
-    $db_selected = mysql_select_db('ihatovgram', $link);
-    if (!$db_selected) {
-        echo "cant select";
-    }
-
-    $sql = "SELECT MAX(id) as max FROM image";
-    $result = mysql_query($sql);
-    $row = mysql_fetch_assoc($result);
-
-    $filename = ($row['max'] + 1) . ".jpg";;
+    $filename = ($max_id + 1) . ".jpg";
     $upload_dir = '/var/www/server/img';
-    echo $_FILES['image']['name'];
     echo "," . $_FILES['image']['tmp_name'];
     if (move_uploaded_file($_FILES['image']['tmp_name'], "$upload_dir/$filename")) {
         echo "success";
     } else {
         echo "cant upload";
     }
-
-
-    $sql = sprintf("INSERT INTO image(fb_token, comment) VALUES('%s', '%s')", $_POST['fb_token'], $_POST['comment']);
-
-    $result_flag = mysql_query($sql);
-
-    mysql_close($link);
+    error_log($_POST['fb_token']);
+    $user_id = $db->getIDbyToken($_POST['fb_token']);
+    $result = $db->insertImage($user_id, $_POST['comment']);
