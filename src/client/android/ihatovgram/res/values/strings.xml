@@ -3,5 +3,6 @@
 
     <string name="hello">Hello World, IhatovgramActivity!</string>
     <string name="app_name">Ihatovgram</string>
+    <string name="loading">loading</string>
 
 </resources>
