@@ -16,6 +16,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -130,6 +131,11 @@ public class CameraView extends SurfaceView
 		try {
 			out = new FileOutputStream(fileName);
 			Bitmap bitmap = BitmapFactory.decodeByteArray(data,0,data.length);
+			int width = bitmap.getWidth();
+			int height = bitmap.getHeight();
+			Matrix matrix = new Matrix();
+			matrix.postRotate(90);
+			bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
 			bitmap.compress(CompressFormat.JPEG, 100, out);
 			out.write(data);
 			out.close();
