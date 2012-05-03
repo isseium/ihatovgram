@@ -23,6 +23,8 @@
             </intent-filter>
         </activity>
         <activity android:name="TakeAPictureActivity"></activity>
+        <activity android:name="com.ipuweb.ihatovgram.Viewer.PhotoViewerActivity"></activity>
+        <activity android:name="com.ipuweb.ihatovgram.Viewer.DetailPhotoActivity"></activity>
     </application>
 
 </manifest>
