@@ -8,6 +8,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.content.ContentResolver;
@@ -30,12 +31,14 @@ import android.widget.Toast;
 
 public class CameraView extends SurfaceView
 		implements SurfaceHolder.Callback, Camera.PictureCallback {
-	private String uploaderUrl = "http://ihatovgram.dev.e-naka.biz/upload.php";
+//	private String uploaderUrl = "http://ihatovgram.dev.e-naka.biz/upload.php";
+	private String uploaderUrl = "http://s2k1ta98.org/server/api/postimage.php";
 	private SurfaceHolder mHolder;
 	private Camera mCamera;
 	private final static String SAVE_DIR = Environment.getExternalStorageDirectory().getPath() +
 			"/data/ihatovgram/";
 	private Context mContext;
+	private String mFbToken;
 	
 	// コンストラクタ
 	public CameraView(Context context) {
@@ -45,6 +48,9 @@ public class CameraView extends SurfaceView
 		mHolder.addCallback(this);
 		// SurfaceViewのタイプをプッシュバッファにする
 		mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+		
+		// @TODO token 取得
+		mFbToken = "token";
 	}
 	public void surfaceCreated(SurfaceHolder holder) {
 		try {
@@ -145,16 +151,21 @@ public class CameraView extends SurfaceView
     public class UploadImageTask extends AsyncTask<String, Integer, Boolean>{
     	
     	public Boolean uploadImage(String filepath){
-	     	DefaultHttpClient client = new DefaultHttpClient(); 
-	    	HttpPost httpPost = new HttpPost(uploaderUrl);
-	    	File upfile = new File( filepath );
-	    	MultipartEntity entity = new MultipartEntity(); 
-	
-	    	entity.addPart("upfile", new FileBody(upfile)); 
-	
-	    	httpPost.setEntity(entity); 
-	    	
 	    	try {
+		     	DefaultHttpClient client = new DefaultHttpClient(); 
+		    	HttpPost httpPost = new HttpPost(uploaderUrl);
+		    	File upfile = new File( filepath );
+		    	MultipartEntity entity = new MultipartEntity(); 
+		
+		    	entity.addPart("image", new FileBody(upfile)); 
+		    	entity.addPart("fb_token", new StringBody(mFbToken));
+		    	
+		    	// @TODO コメント機能
+		    	entity.addPart("comment", new StringBody(""));
+		    	httpPost.setEntity(entity); 
+		    	
+		
+		    	
 		    	HttpResponse response = client.execute(httpPost);
 		    	Log.d("Response", response.toString());
 	    	} catch(IOException e){
@@ -167,7 +178,19 @@ public class CameraView extends SurfaceView
     	}
     	
     	protected Boolean doInBackground (String... filepath){
-    		return uploadImage(filepath[0]);
+    		boolean result = uploadImage(filepath[0]);
+    		return result;
+    	}
+    	
+    	@Override
+    	protected void onPostExecute(Boolean result){
+    		String msg = "";
+    		if(result){
+    			msg = "Success!";
+    		}else{
+    			msg = "Failed to upload.";
+    		}
+			Toast.makeText(mContext, msg, Toast.LENGTH_LONG).show();
     	}
     }
 }
