@@ -20,7 +20,7 @@ public class TakeAPictureActivity extends Activity {
         super.onCreate(savedInstanceState);
         mCameraView = new CameraView(this);
         setContentView(mCameraView);
-        // ��ʂ̃��b�N��h��
+        // 画面のロックを防ぐ
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
     

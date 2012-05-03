@@ -17,6 +17,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
@@ -35,25 +36,22 @@ public class CameraView extends SurfaceView
 			"/data/ihatovgram/";
 	private Context mContext;
 	
-	// �R���X�g���N�^
+	// コンストラクタ
 	public CameraView(Context context) {
 		super(context);
 		this.mContext = context;
-		// TODO �����������ꂽ�R���X�g���N�^�[�E�X�^�u
 		mHolder = getHolder();
 		mHolder.addCallback(this);
-		// SurfaceView�̃^�C�v���v�b�V���o�b�t�@�ɂ���
+		// SurfaceViewのタイプをプッシュバッファにする
 		mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 	}
 	public void surfaceCreated(SurfaceHolder holder) {
-		// TODO �����������ꂽ���\�b�h�E�X�^�u
 		try {
-			// �J�������I�[�v��
+			// カメラをオープン
 			mCamera = Camera.open();
-			// �v���r���[�f�B�X�v���C�i�\����j��ݒ�
+			// プレビューディスプレイ（表示先）を設定
 			mCamera.setPreviewDisplay(mHolder);
 		} catch (IOException e) {
-			// TODO �����������ꂽ catch �u���b�N
 			e.printStackTrace();
 		}
 	}
@@ -64,11 +62,9 @@ public class CameraView extends SurfaceView
 	}
 	
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		// TODO �����������ꂽ���\�b�h�E�X�^�u
-		
-		// �v���r���[���~
+		// プレビューを停止 
 		mCamera.stopPreview();
-		// �J�����������[�X
+		// カメラをリリース
 		mCamera.release();
 		mCamera = null;
 	}
@@ -91,18 +87,17 @@ public class CameraView extends SurfaceView
 	}
 	
 	public void onPictureTaken(byte[] data, Camera camera) {
-		// TODO �����������ꂽ���\�b�h�E�X�^�u
 		try {
 			File dirs = new File(SAVE_DIR);
 			if (!dirs.exists()) {
 				dirs.mkdirs();
 			}
-			// �摜��SD�ɕۑ�
+			// 画像をSDに保存
 			String imageName = SAVE_DIR + System.currentTimeMillis() + ".jpg";
 			Log.d("TEST", imageName);
 			data2file(data, imageName);
 			
-			// ���f�B�A���C�u�����ɉ摜��F��������
+			// メディアライブラリに画像を認識させる
 			ContentValues values = new ContentValues();  
 			ContentResolver contentResolver = mContext.getContentResolver();  
 			values.put(Images.Media.MIME_TYPE, "image/jpeg");  
@@ -110,18 +105,18 @@ public class CameraView extends SurfaceView
 			try {  
 				contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);  
 			} catch (Exception e) {  
-				Toast.makeText(mContext, "�ċN����ɉ摜���F������܂��B", Toast.LENGTH_SHORT).show();  
+				Toast.makeText(mContext, "再起動後に画像が認識されます", Toast.LENGTH_SHORT).show();  
 				e.printStackTrace();  
 			}
 			
 			// upload photo
-			uploadFile(imageName);
+	        UploadImageTask task = new UploadImageTask();
+	        task.execute(imageName);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		
-		// �摜�̕ۑ��I����̏���
+		// 画像の保存終了後の処理 
 		camera.startPreview();
 	}
 	
@@ -141,24 +136,32 @@ public class CameraView extends SurfaceView
 		}
 	}
 	
-    public boolean uploadFile(String filepath){
-    	DefaultHttpClient client = new DefaultHttpClient(); 
-    	HttpPost httpPost = new HttpPost(uploaderUrl);
-    	File upfile = new File( filepath );
-    	MultipartEntity entity = new MultipartEntity(); 
-
-    	entity.addPart("upfile", new FileBody(upfile)); 
-
-    	httpPost.setEntity(entity); 
+    public class UploadImageTask extends AsyncTask<String, Integer, Boolean>{
     	
-    	try {
-	    	HttpResponse response = client.execute(httpPost);
-	    	Log.d("Response", response.toString());
-    	} catch(IOException e){
-    		Log.d("ERROR", e.getMessage());
-    		Log.d("ERROR", e.toString());
+    	public Boolean uploadImage(String filepath){
+	     	DefaultHttpClient client = new DefaultHttpClient(); 
+	    	HttpPost httpPost = new HttpPost(uploaderUrl);
+	    	File upfile = new File( filepath );
+	    	MultipartEntity entity = new MultipartEntity(); 
+	
+	    	entity.addPart("upfile", new FileBody(upfile)); 
+	
+	    	httpPost.setEntity(entity); 
+	    	
+	    	try {
+		    	HttpResponse response = client.execute(httpPost);
+		    	Log.d("Response", response.toString());
+	    	} catch(IOException e){
+	    		Log.d("ERROR", e.getMessage());
+	    		Log.d("ERROR", e.toString());
+	    		return false;
+	    	}
+	    	
+	    	return true;
     	}
     	
-    	return true;
+    	protected Boolean doInBackground (String... filepath){
+    		return uploadImage(filepath[0]);
+    	}
     }
 }
