@@ -3,11 +3,11 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="stylesheet" href="{$config.url}css/ethna.css" type="text/css" />
-<title>Pointcard</title>
+<title>Ihatovgram</title>
 </head>
 <body>
 <div id="header">
-    <h1>Pointcard</h1>
+    <h1>Ihatovgram</h1>
 </div>
 
 <div id="main">

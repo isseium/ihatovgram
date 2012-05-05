@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.26, created on 2012-05-06 00:11:11
+<?php /* Smarty version 2.6.26, created on 2012-05-06 00:42:43
          compiled from layout.tpl */ ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -6,11 +6,11 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="stylesheet" href="<?php echo $this->_tpl_vars['config']['url']; ?>
 css/ethna.css" type="text/css" />
-<title>Pointcard</title>
+<title>Ihatovgram</title>
 </head>
 <body>
 <div id="header">
-    <h1>Pointcard</h1>
+    <h1>Ihatovgram</h1>
 </div>
 
 <div id="main">
