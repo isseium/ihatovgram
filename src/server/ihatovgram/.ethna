@@ -1,0 +1,4 @@
+[project]
+ethna_version = "2.6.0-beta3"
+controller_file = "app/Ihatovgram_Controller.php"
+controller_class = "Ihatovgram_Controller"
