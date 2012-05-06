@@ -1,7 +1,5 @@
 package com.ipuweb.ihatovgram;
 
-import com.ipuweb.ihatovgram.Viewer.PhotoViewerActivity;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
