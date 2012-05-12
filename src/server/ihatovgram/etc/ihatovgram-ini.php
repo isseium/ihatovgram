@@ -11,7 +11,7 @@ $config = array(
     // debug
     // (to enable ethna_info and ethna_unittest, turn this true)
     'debug' => false,
-
+    'dsn' => 'mysql://ipuweb:ihatovgram@localhost/ihatovgram',
     // db
     // sample-1: single db
     // 'dsn' => 'mysql://user:password@server/database',
